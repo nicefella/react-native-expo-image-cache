@@ -21,6 +21,7 @@ interface ImageProps {
   defaultSource?: ImageURISource | number;
   preview?: ImageSourcePropType;
   options?: DownloadOptions;
+  headers?: { [name: string]: string };
   uri: string;
   transitionDuration?: number;
   tint?: "dark" | "light";
@@ -86,7 +87,7 @@ export default class Image extends React.Component<ImageProps, ImageState> {
   }
 
   render() {
-    const { preview, style, defaultSource, tint, ...otherProps } = this.props;
+    const { preview, style, defaultSource, tint, headers = {}, ...otherProps } = this.props;
     const { uri, intensity } = this.state;
     const isImageReady = !!uri;
     const opacity = intensity.interpolate({
@@ -111,7 +112,7 @@ export default class Image extends React.Component<ImageProps, ImageState> {
             {...otherProps}
           />
         )}
-        {isImageReady && <RNImage source={{ uri }} style={computedStyle} {...otherProps} />}
+        {isImageReady && <RNImage source={{ uri, headers }} style={computedStyle} {...otherProps} />}
         {!!preview && Platform.OS === "ios" && <AnimatedBlurView style={computedStyle} {...{ intensity, tint }} />}
         {!!preview && Platform.OS === "android" && (
           <Animated.View style={[computedStyle, { backgroundColor: tint === "dark" ? black : white, opacity }]} />
